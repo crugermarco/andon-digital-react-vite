@@ -1,0 +1,70 @@
+@keyframes shimmer {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 300% 0%; }
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.3; }
+    33% { transform: translateY(-30px) rotate(120deg); opacity: 0.6; }
+    66% { transform: translateY(15px) rotate(240deg); opacity: 0.4; }
+  }
+  
+  @keyframes pulse-slow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  
+  @keyframes pulse-fast {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.4); opacity: 0.2; }
+  }
+  
+  @keyframes pulse-medium {
+    0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.55; }
+    50% { transform: scale(1.3) rotate(180deg); opacity: 0.25; }
+  }
+  
+  @keyframes slideInUp {
+    from { opacity: 0; transform: translateY(40px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  
+  @keyframes slideInRight {
+    from { transform: translateX(400px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  @keyframes neonPulse {
+    0%, 100% { box-shadow: var(--neon-glow), 0 0 20px var(--status-color); }
+    50% { box-shadow: var(--neon-glow), 0 0 40px var(--status-color); }
+  }
+  
+  @keyframes flashRedWhite {
+    0%, 100% { background-color: #ef4444; color: white; }
+    50% { background-color: white; color: #ef4444; }
+  }
+  
+  @keyframes flashYellowBlack {
+    0%, 100% { background-color: #eab308; color: #0f172a; }
+    50% { background-color: #0f172a; color: #eab308; }
+  }
+  
+  @keyframes criticalPulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.4); }
+    50% { box-shadow: 0 0 40px rgba(239, 68, 68, 0.8); }
+  }
+  
+  @keyframes badgePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }

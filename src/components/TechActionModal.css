@@ -1,0 +1,90 @@
+.tech-modal {
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(71, 85, 105, 0.4);
+    border-radius: 28px;
+    padding: 32px;
+    width: 90%;
+    max-width: 560px;
+    animation: slideInUp 0.3s ease;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+  }
+  
+  .restriction-modal {
+    max-width: 400px;
+    text-align: center;
+  }
+  
+  .restriction-modal .modal-body {
+    padding: 20px 0;
+    color: #fca5a5;
+    font-size: 15px;
+  }
+  
+  .warning-message {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    background: rgba(234, 179, 8, 0.1);
+    border: 1px solid rgba(234, 179, 8, 0.3);
+    border-radius: 12px;
+    color: #fde047;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  
+  .accepted-info {
+    padding: 14px 16px;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 12px;
+    color: #6ee7b7;
+    margin-bottom: 20px;
+  }
+  
+  .accepted-info p {
+    margin: 0;
+    font-weight: 600;
+  }
+  
+  .tech-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  
+  .tech-form .form-field input:disabled,
+  .tech-form .form-field textarea:disabled,
+  .tech-form .form-field select:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: rgba(15, 23, 42, 0.5);
+  }
+  
+  .btn-reassign {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, #eab308, #ca8a04);
+    border: none;
+    border-radius: 14px;
+    color: #0f172a;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(234, 179, 8, 0.3);
+    transition: all 0.25s;
+  }
+  
+  .btn-reassign:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(234, 179, 8, 0.4);
+  }
+  
+  .btn-reassign:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
