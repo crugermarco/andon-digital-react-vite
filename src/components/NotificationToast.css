@@ -89,7 +89,26 @@
   .toast-actions {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
+  }
+  
+  .toast-sound-toggle {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .toast-sound-toggle:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
   }
   
   .toast-timer {
@@ -230,8 +249,16 @@
     left: 0;
     height: 3px;
     background: var(--priority-color, #ef4444);
-    width: var(--progress, 100%);
-    transition: width 1s linear;
+    width: 100%;
+  }
+  
+  .toast-progress--infinite {
+    animation: progressPulse 1.5s ease-in-out infinite;
+  }
+  
+  @keyframes progressPulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
   }
   
   @media (max-width: 480px) {

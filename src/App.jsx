@@ -7,55 +7,52 @@ import RequestModal from './components/RequestModal'
 import NotificationToast from './components/NotificationToast'
 import AdminPanel from './components/AdminPanel'
 import BackgroundEffect from './components/BackgroundEffect'
-import { playNotificationSound } from './utils/sound'
 import './App.css'
 
 function AppContent() {
   const { machines, acceptRequest } = useMachines()
-  const { currentUser, isAuthorizedTech } = useAuth()
+  const { isAuthorizedTech } = useAuth()
   const [showRequestModal, setShowRequestModal] = useState(false)
   const [showAdminPanel, setShowAdminPanel] = useState(false)
   const [notifications, setNotifications] = useState([])
-  const [notifiedIds, setNotifiedIds] = useState(new Set())
   const previousMachinesRef = useRef([])
 
   useEffect(() => {
-    // Solo para usuarios autorizados (Marco Cruger o Josue Chavez)
     if (!isAuthorizedTech()) return
-
+  
     const previousMachines = previousMachinesRef.current
     const newMTMachines = machines.filter(m => {
-      // Buscar máquinas que antes NO estaban en MT y ahora SÍ
       const previousMachine = previousMachines.find(pm => pm.nombre === m.nombre)
       const isNewMT = m.status === 'MT' && 
                       !m.acceptedBy && 
                       !m.reassigned && 
-                      !m.notified &&
-                      !notifiedIds.has(m.solicitudId)
+                      !m.notified
       
-      // Verificar si cambió de estado a MT
       const statusChangedToMT = previousMachine && 
                                 previousMachine.status !== 'MT' && 
                                 m.status === 'MT'
       
       return isNewMT || statusChangedToMT
     })
-
+  
     if (newMTMachines.length > 0) {
-      console.log('Nuevas solicitudes MT detectadas:', newMTMachines)
-      
-      // Reproducir sonido
-      playNotificationSound()
-      
-      // Mostrar notificaciones
-      setNotifications(prev => [...prev, ...newMTMachines])
-      setNotifiedIds(prev => {
-        const newSet = new Set(prev)
-        newMTMachines.forEach(m => newSet.add(m.solicitudId))
-        return newSet
+      setNotifications(prev => {
+        const activeNotifications = prev.filter(n => {
+          const machineStillMT = machines.find(m => 
+            m.solicitudId === n.solicitudId && 
+            m.status === 'MT' && 
+            !m.acceptedBy
+          )
+          return machineStillMT
+        })
+        
+        const existingIds = activeNotifications.map(n => n.solicitudId)
+        const toAdd = newMTMachines.filter(m => !existingIds.includes(m.solicitudId))
+        
+        return [...activeNotifications, ...toAdd]
       })
     }
-
+  
     previousMachinesRef.current = machines
   }, [machines, isAuthorizedTech])
 
