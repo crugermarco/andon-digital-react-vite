@@ -54,6 +54,9 @@ const MachineCard = ({ machine, onTechAction }) => {
 
   const placeholderImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMTUwIiB2aWV3Qm94PSIwIDAgMzAwIDE1MCI+PHJlY3Qgd2lkdGg9IjMwMCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiMxZTFiMmIiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSIjNjQ3NDhiIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIj5TaW4gSW1hZ2VuPC90ZXh0Pjwvc3ZnPg=='
 
+  // Determinar si mostrar detalles (solo para MT o REASIGNADA)
+  const showDetails = machine.status === 'MT' || machine.reassigned
+
   return (
     <div 
       className="machine-card shimmer-border"
@@ -81,41 +84,39 @@ const MachineCard = ({ machine, onTechAction }) => {
         {statusConfig.text}
       </div>
 
+      {/* TÉCNICO - Solo visible si hay uno asignado */}
       {machine.acceptedBy && (
-        <div className="accepted-by-tooltip">
-          <span className="tooltip-icon">
-            <User size={14} />
-          </span>
-          <div className="tooltip-text">
-            Atendiendo: {machine.acceptedBy}
-          </div>
+        <div className="technician-info">
+          <User size={14} />
+          <span>{machine.acceptedBy}</span>
         </div>
       )}
 
-      <div className="machine-details">
-        {(machine.status === 'MT' || machine.reassigned) && (
-          <div className="detail-item">
-            <span>📝</span>
-            <span>{machine.description || 'Sin descripción'}</span>
-          </div>
-        )}
-        <div className="detail-item">
-          <span>🏷️</span>
-          <span>ID: {machine.solicitudId || 'N/A'}</span>
+      {/* DETALLES - Solo visibles en MT o REASIGNADA */}
+      {showDetails && (
+        <div className="machine-details">
+          {machine.description && (
+            <div className="detail-item">
+              <span>📝</span>
+              <span>{machine.description}</span>
+            </div>
+          )}
+          {machine.priority && (
+            <div className="detail-item">
+              <span>⚡</span>
+              <span className={`priority-text priority-${machine.priority.toLowerCase()}`}>
+                {machine.priority}
+              </span>
+            </div>
+          )}
+          {machine.responseTime && (
+            <div className="detail-item">
+              <span>⏱️</span>
+              <span>{machine.responseTime} min</span>
+            </div>
+          )}
         </div>
-        {machine.responseTime && (
-          <div className="detail-item">
-            <span>⏱️</span>
-            <span>Tiempo respuesta: {machine.responseTime} min</span>
-          </div>
-        )}
-        {machine.priority && (
-          <div className="detail-item">
-            <span>⚡</span>
-            <span>Prioridad: {machine.priority}</span>
-          </div>
-        )}
-      </div>
+      )}
 
       <div className="machine-actions">
         {canAccept && (

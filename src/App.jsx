@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { MachineProvider, useMachines } from './context/MachineContext'
 import Header from './components/Header'
@@ -7,26 +7,47 @@ import RequestModal from './components/RequestModal'
 import NotificationToast from './components/NotificationToast'
 import AdminPanel from './components/AdminPanel'
 import BackgroundEffect from './components/BackgroundEffect'
+import { playNotificationSound } from './utils/sound'
 import './App.css'
 
 function AppContent() {
   const { machines, acceptRequest } = useMachines()
-  const { isMarcoCruger } = useAuth()
+  const { currentUser, isAuthorizedTech } = useAuth()
   const [showRequestModal, setShowRequestModal] = useState(false)
   const [showAdminPanel, setShowAdminPanel] = useState(false)
   const [notifications, setNotifications] = useState([])
   const [notifiedIds, setNotifiedIds] = useState(new Set())
+  const previousMachinesRef = useRef([])
 
   useEffect(() => {
-    const newMTMachines = machines.filter(m => 
-      m.status === 'MT' && 
-      !m.acceptedBy && 
-      !m.reassigned && 
-      !m.notified &&
-      !notifiedIds.has(m.solicitudId)
-    )
+    // Solo para usuarios autorizados (Marco Cruger o Josue Chavez)
+    if (!isAuthorizedTech()) return
+
+    const previousMachines = previousMachinesRef.current
+    const newMTMachines = machines.filter(m => {
+      // Buscar máquinas que antes NO estaban en MT y ahora SÍ
+      const previousMachine = previousMachines.find(pm => pm.nombre === m.nombre)
+      const isNewMT = m.status === 'MT' && 
+                      !m.acceptedBy && 
+                      !m.reassigned && 
+                      !m.notified &&
+                      !notifiedIds.has(m.solicitudId)
+      
+      // Verificar si cambió de estado a MT
+      const statusChangedToMT = previousMachine && 
+                                previousMachine.status !== 'MT' && 
+                                m.status === 'MT'
+      
+      return isNewMT || statusChangedToMT
+    })
 
     if (newMTMachines.length > 0) {
+      console.log('Nuevas solicitudes MT detectadas:', newMTMachines)
+      
+      // Reproducir sonido
+      playNotificationSound()
+      
+      // Mostrar notificaciones
       setNotifications(prev => [...prev, ...newMTMachines])
       setNotifiedIds(prev => {
         const newSet = new Set(prev)
@@ -34,7 +55,9 @@ function AppContent() {
         return newSet
       })
     }
-  }, [machines])
+
+    previousMachinesRef.current = machines
+  }, [machines, isAuthorizedTech])
 
   const handleAcceptNotification = async (solicitudId) => {
     try {

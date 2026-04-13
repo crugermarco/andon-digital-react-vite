@@ -47,7 +47,8 @@ export const MachineProvider = ({ children }) => {
           reassigned: latestRequest?.reasignado || false,
           notified: latestRequest?.notificado || false,
           responseTime: latestRequest?.tiempo_respuesta_minutos || null,
-          priority: latestRequest?.prioridad || null
+          priority: latestRequest?.prioridad || null,
+          fecha_solicitud: latestRequest?.fecha_solicitud || null
         }
       })
 
@@ -81,15 +82,35 @@ export const MachineProvider = ({ children }) => {
 
     const interval = setInterval(loadMachines, REFRESH_INTERVAL)
 
+    // SUSCRIPCIÓN EN TIEMPO REAL
     channelRef.current = supabase
       .channel('machine-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'maquinas' }, loadMachines)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'solicitudes' }, loadMachines)
-      .subscribe()
+      .on('postgres_changes', { 
+        event: '*', 
+        schema: 'public', 
+        table: 'maquinas' 
+      }, () => {
+        console.log('Cambio en maquinas detectado')
+        loadMachines()
+      })
+      .on('postgres_changes', { 
+        event: '*', 
+        schema: 'public', 
+        table: 'solicitudes' 
+      }, (payload) => {
+        console.log('Cambio en solicitudes detectado:', payload)
+        loadMachines()
+        if (currentUser) checkActiveJob()
+      })
+      .subscribe((status) => {
+        console.log('Suscripcion Supabase status:', status)
+      })
 
     return () => {
       clearInterval(interval)
-      if (channelRef.current) supabase.removeChannel(channelRef.current)
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current)
+      }
     }
   }, [currentUser])
 
@@ -105,7 +126,8 @@ export const MachineProvider = ({ children }) => {
         prioridad: requestData.priority,
         descripcion: requestData.problemDescription,
         estatus: 'MT',
-        fecha_solicitud: new Date().toISOString()
+        fecha_solicitud: new Date().toISOString(),
+        notificado: false
       }])
       .select()
 
