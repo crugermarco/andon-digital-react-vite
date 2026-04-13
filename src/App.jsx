@@ -21,6 +21,23 @@ function AppContent() {
     if (!isAuthorizedTech()) return
   
     const previousMachines = previousMachinesRef.current
+    
+    const machinesToRemove = previousMachines.filter(pm => {
+      const currentMachine = machines.find(m => m.nombre === pm.nombre)
+      return !currentMachine || 
+             currentMachine.status !== 'MT' || 
+             currentMachine.acceptedBy || 
+             currentMachine.reassigned
+    })
+  
+    if (machinesToRemove.length > 0) {
+      setNotifications(prev => 
+        prev.filter(n => 
+          !machinesToRemove.some(m => m.solicitudId === n.solicitudId)
+        )
+      )
+    }
+  
     const newMTMachines = machines.filter(m => {
       const previousMachine = previousMachines.find(pm => pm.nombre === m.nombre)
       const isNewMT = m.status === 'MT' && 
@@ -37,19 +54,9 @@ function AppContent() {
   
     if (newMTMachines.length > 0) {
       setNotifications(prev => {
-        const activeNotifications = prev.filter(n => {
-          const machineStillMT = machines.find(m => 
-            m.solicitudId === n.solicitudId && 
-            m.status === 'MT' && 
-            !m.acceptedBy
-          )
-          return machineStillMT
-        })
-        
-        const existingIds = activeNotifications.map(n => n.solicitudId)
+        const existingIds = prev.map(n => n.solicitudId)
         const toAdd = newMTMachines.filter(m => !existingIds.includes(m.solicitudId))
-        
-        return [...activeNotifications, ...toAdd]
+        return [...prev, ...toAdd]
       })
     }
   
@@ -59,6 +66,7 @@ function AppContent() {
   const handleAcceptNotification = async (solicitudId) => {
     try {
       await acceptRequest(solicitudId)
+      setNotifications(prev => prev.filter(n => n.solicitudId !== solicitudId))
     } catch (error) {
       alert(error.message)
     }
